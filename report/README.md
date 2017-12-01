@@ -18,7 +18,7 @@ title: Lab 04 - Docker
 
 
 
-#### Introduction <a name="introduction"></a>
+### Introduction <a name="introduction"></a>
 
 The aim of this lab is to build our own Docker image. Through these steps, we'll become familiar with the process supervision for Docker, understand the concept for dynamic scaling of an app and, finally, put into practice decentralized management of web server instances. The lab is divided in seven parts. The version of HAProxy used is 1.5. 
 
@@ -27,48 +27,17 @@ The aim of this lab is to build our own Docker image. Through these steps, we'll
 
 #### Identify issues
 
-In the previous lab, we built a simple distributed system with a load
-balancer and two web applications. The architecture of our distributed
-web application is shown in the following diagram:
-
-![Architecture](assets/img/initial-architecture.png)
-
-The two web app containers stand for two web servers. They run a
-NodeJS sample application that implements a simple REST API. Each
-container exposes TCP port 3000 to receive HTTP requests.
-
-The HAProxy load balancer is listening on TCP port 80 to receive HTTP
-requests from users. These requests will be forwarded to and
-load-balanced between the web app containers. Additionally it exposes
-TCP ports 1936 and 9999 for the stats page and the command-line
-interface.
-
-For more details about the web application, take a look to the
-[previous lab](https://github.com/SoftEng-HEIGVD/Teaching-HEIGVD-AIT-2015-Labo-02).
-
-Now suppose you are working for a big e-tailer like Galaxus or
-Zalando. Starting with Black Friday and throughout the holiday season
-you see traffic to your web servers increase several times as
-customers are looking for and buying presents. In January the traffic
-drops back again to normal. You want to be able to add new servers as
-the traffic from customers increases and you want to be able to remove
-servers as the traffic goes back to normal.
-
-Suppose further that there is an obscure bug in the web application
-that the developers haven't been able to understand yet. It makes the
-web servers crash unpredictably several times per week. When you
-detect that a web server has crashed you kill its container and you
-launch a new container.
-
 Suppose further currently your web servers and your load balancer are
 deployed like in the previous lab. What are the issues with this
-architecture? Answer the following questions. The questions are
-numbered from `M1` to `M6` to refer to them later in the lab. Please
-give in your report the reference of the question you are answering.
+architecture? 
 
 1. <a name="M1"></a>**[M1]** Do you think we can use the current
    solution for a production environment? What are the main problems
    when deploying it in a production environment?
+   
+   When we made some tests in the previous lab, we saw that when there are 
+   a lot of connexions, the nubmber of requests per seconds falls. We can see
+   here that this not a good performance.  
 
 2. <a name="M2"></a>**[M2]** Describe what you need to do to add new
    `webapp` container to the infrastructure. Give the exact steps of
@@ -119,90 +88,31 @@ give in your report the reference of the question you are answering.
 
 #### Install the tools
 
-> In this part of the task you will set up Vagrant with Docker
-  containers like in the previous lab. The Docker images are a little
-  bit different from the previous lab and we will work with these
-  images during this lab.
-
-You should have installed Vagrant already in the previous lab. If not,
-download and install from:
-
-* [Vagrant](https://www.vagrantup.com/)
-
-Fork the following repository and then clone the fork to your machine:
-<https://github.com/SoftEng-HEIGVD/Teaching-HEIGVD-AIT-2015-Labo-Docker>
-
-To fork the repo, just click on the `Fork` button in the GitHub interface.
-
-Once you have installed everything, start the Vagrant VM from the
-project folder with the following command:
-
-```bash
-vagrant up
-```
-
-This will download an Ubuntu Linux image and initialize a Vagrant
-virtual machine with it. Vagrant then runs a provisioning script
-inside the VM that installs Docker and creates three Docker
-containers. One contains HAProxy, the other two contain each a sample
-web application.
-
-The containers with the web application stand for two web servers that
-are load-balanced by HAProxy.
-
-The provisioning of the VM and the containers will take several
-minutes. You should see output similar to the following:
-
-```
-vagrant up
-Bringing machine 'default' up with 'virtualbox' provider...
-==> default: Importing base box 'phusion/ubuntu-14.04-amd64'...
-==> default: Matching MAC address for NAT networking...
-==> default: Checking if box 'phusion/ubuntu-14.04-amd64' is up to date...
-[...]
-==> default: Removing intermediate container 4a23f3ea2a27
-==> default: Successfully built 69388325f98a
-==> default: ************************  run webapps  ************************
-==> default: 3fb984306e36090f18e9da5b86c32d2360ad7768a0ab11dff7f9b588c2869e4a
-==> default: c845c95bfb48d67625d67367a1a12226a6d35269d26ec452c90b0fd095a29d28
-==> default: ************************  run haproxy  ************************
-==> default: 5882839613b57e8b97737787a33678116237a80e0643cdd13fb34ac5f9e7d22b
-```
-
-There will be occasional error messages from `dpkg-preconfigure`,
-`debconf` or `invoke-rc.d`. You can safely ignore them.
-
-When deployment is finished you can log into the VM like so:
-
-```bash
-vagrant ssh
-```
-
-Once inside the VM you can list the running containers like so:
-
 ```bash
 docker ps
 ```
 
-You should see output similar to the following:
+Output : 
 
-```
-CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                NAMES
-2b277f0fe8da        softengheigvd/ha       "./run.sh"          21 seconds ago      Up 20 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp   ha
-0c7d8ff6562f        softengheigvd/webapp   "./run.sh"          22 seconds ago      Up 21 seconds       3000/tcp                                                             s2
-d9a4aa8da49d        softengheigvd/webapp   "./run.sh"          22 seconds ago      Up 21 seconds       3000/tcp                                                             s1
+```bash
+vagrant@ubuntu-14:~$ docker ps
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                                                NAMES
+ca41d450c676        softengheigvd/ha       "/docker-entrypoint.…"   24 seconds ago      Up 23 seconds       0.0.0.0:80->80/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp   ha
+c160fa8469fa        softengheigvd/webapp   "/scripts/run.sh"        24 seconds ago      Up 23 seconds       3000/tcp                                                             s2
+78a6d9e876a0        softengheigvd/webapp   "/scripts/run.sh"        25 seconds ago      Up 24 seconds       3000/tcp                                                             s1
 ```
 
-You can now navigate to the address of the load balancer <http://192.168.42.42>
-in your favorite browser. The load balancer forwards your HTTP request to one
-of the web app containers.
 
 **Deliverables**:
 
 1. Take a screenshot of the stats page of HAProxy at
    <http://192.168.42.42:1936>. You should see your backend nodes.
 
+   ![alt img](./img/task0_answer1.PNG)
+
 2. Give the URL of your repository URL in the lab report.
+
+https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 
 
 ### <a name="paragraph2"></a>Task 1: Add a process supervisor to run several processes
@@ -478,6 +388,7 @@ content as in the previous task.
    are we installing a process supervisor. Do not hesitate to do more
    research and to find more articles on that topic to illustrate the
    problem.
+
 
 
 ### <a name="paragraph3"></a>Task 2: Add a tool to manage membership in the web server cluster
@@ -923,6 +834,7 @@ docker run -d --network heig --name s1 softengheigvd/webapp
    similar situations where we need some auto-discovery mechanism.
 
 
+
 ### <a name="paragraph4"></a>Task 3: React to membership changes
 
 > Serf is really simple to use as it lets the user write their own shell
@@ -1062,6 +974,7 @@ continue to run.
 
 3. Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
    file present in the container. Put the logs in the `logs` directory in your repo.
+
 
 
 ### <a name="paragraph5"></a>Task 4: Use a template engine to easily generate configuration files
@@ -1327,6 +1240,7 @@ exit
    say about the way we generate it? What is the problem if any?
 
 
+
 ### <a name="paragraph6"></a>Task 5: Generate a new load balancer configuration when membership changes
 
 > We now have S6 and Serf ready in our HAProxy image. We have member
@@ -1566,6 +1480,8 @@ tasks**)
    own tools or the ones you discovered online. In that case, do not
    forget to cite your references.
 
+
+
 ### <a name="paragraph7"></a>Task 6: Make the load balancer automatically reload the new configuration
 
 > Finally, we have all the pieces in place to finish our
@@ -1712,42 +1628,13 @@ and reacts to nodes coming and going!
 
 3. (Optional:) Present a live demo where you add and remove a backend container.
 
+
+
 ## <a name="difficulties"></a> Difficulties
+
+
+
 
 ## <a name="conclusion"></a> Conclusion
 
-## Windows troubleshooting
-
-It appears that Windows users can encounter a `CRLF` vs. `LF` problem when the repos is cloned without taking care of the ending lines. Therefore, if the ending lines are `CRFL`, it will produce an error message with Docker during the Vagrant provisioning phase:
-
-```bash
-... no such file or directory
-```
-
-(Take a look to this Docker issue: https://github.com/docker/docker/issues/9066, the last post show the error message).
-
-The error message is not really relevant and difficult to troubleshoot. It seems the problem is caused by the line endings not correctly interpreted by Linux when they are `CRLF` in place of `LF`. The problem is caused by cloning the repos on Windows with a system that will not keep the `LF` in the files.
-
-Fortunatelly, there is a procedure to fix the `CRLF` to `LF` and then be sure Docker will recognize the `*.sh` files.
-
-First, you need to add the file `.gitattributes` file with the following content:
-
-```bash
-* text eol=lf
-```
-
-This will ask the repos to force the ending lines to `LF` for every text files.
-
-Then, you need to reset your repository. Be sure you do not have **modified** files.
-
-```bash
-# Erease all the files in your local repository
-git rm --cached -r .
-
-# Restore the files from your local repository and apply the correct ending lines (LF)
-git reset --hard
-```
-
-Then, you are ready to go. You can provision your Vagrant VM again and start to work peacefully.
-
-There is a link to deeper explanation and procedure about the ending lines written by GitHub: https://help.github.com/articles/dealing-with-line-endings/
+That was nice 
