@@ -20,7 +20,10 @@ title: Lab 04 - Docker
 
 ### Introduction <a name="introduction"></a>
 
-The aim of this lab is to build our own Docker image. Through these steps, we'll become familiar with the process supervision for Docker, understand the concept for dynamic scaling of an app and, finally, put into practice decentralized management of web server instances. The lab is divided in seven parts. The version of HAProxy used is 1.5. 
+The aim of this lab is to build our own Docker image. Through these steps, we'll become 
+familiar with the process supervision for Docker, understand the concept for dynamic scaling 
+of an app and, finally, put into practice decentralized management of web server instances. 
+The lab is divided in seven parts. The version of HAProxy used is 1.5. 
 
 
 ### <a name="paragraph1"></a>Task 0: Identify issues and install the tools 
@@ -31,34 +34,56 @@ Suppose further currently your web servers and your load balancer are
 deployed like in the previous lab. What are the issues with this
 architecture? 
 
-1. <a name="M1"></a>**[M1]** Do you think we can use the current
+1. <a name="M1"></a>**[M1]** __Do you think we can use the current
    solution for a production environment? What are the main problems
-   when deploying it in a production environment?
+   when deploying it in a production environment?__
    
-   When we made some tests in the previous lab, we saw that when there are 
-   a lot of connexions, the nubmber of requests per seconds falls. We can see
-   here that this not a good performance.  
+   <a name="M1"></a>**[A1]** No, it's not a good idead to user it in
+   a production environment. The main problpem is that we have to 
+   delacre each server manually in the conf file (it's a static 
+   configuration).It is not made automatically, so it's a lof of work 
+   to maintain. Beside, each time we add a server, we need to reboot. 
 
-2. <a name="M2"></a>**[M2]** Describe what you need to do to add new
+2. <a name="M2"></a>**[M2]** __Describe what you need to do to add new
    `webapp` container to the infrastructure. Give the exact steps of
    what you have to do without modifiying the way the things are
    done. Hint: You probably have to modify some configuration and
-   script files in a Docker image.
+   script files in a Docker image.__
 
-3. <a name="M3"></a>**[M3]** Based on your previous answers, you have
+   <a name="M1"></a>**[A2]** We need to change ha/config/haproxy.cfg file
+   and add a new line : 
+   ```bash
+      server s3 <s3>:3000 check
+   ```
+   Same thing in the ha/scripts/run.sh file:
+   ```bash
+   sed -i 's/<s3>/$S3_PORT_3000_TCP_ADDR/g' /usr/local/etc/haproxy/haproxy.cfg
+   ```
+   Since we modify the config of ha container, we need to re-build it. When 
+   it's done, we can normally run the ha container and don't forget to run also
+   the new server s3.
+
+3. <a name="M3"></a>**[M3]** __Based on your previous answers, you have
    detected some issues in the current solution. Now propose a better
-   approach at a high level.
+   approach at a high level.__
 
-4. <a name="M4"></a>**[M4]** You probably noticed that the list of web
+   <a name="M1"></a>**[A3]** The configuration should not be static but dynamic.
+   We should use a tool or a program to communicate with te load balancer to tell
+   it which server are up or down. 
+
+4. <a name="M4"></a>**[M4]** __You probably noticed that the list of web
   application nodes is hardcoded in the load balancer
   configuration. How can we manage the web app nodes in a more dynamic
-  fashion?
+  fashion?__
 
-5. <a name="M5"></a>**[M5]** In the physical or virtual machines of a
+  <a name="M1"></a>**[A4]** As said previously, we should user a special tool that 
+  will say to the load balancer all servers that are connected. For this lab, we 
+  will be introduced to the serf agent. 
+
+5. <a name="M5"></a>**[M5]** __In the physical or virtual machines of a
    typical infrastructure we tend to have not only one main process
    (like the web server or the load balancer) running, but a few
    additional processes on the side to perform management tasks.
-
    For example to monitor the distributed system as a whole it is
    common to collect in one centralized place all the logs produced by
    the different machines. Therefore we need a process running on each
@@ -66,14 +91,15 @@ architecture?
    also imagine a central tool that reaches out to each machine to
    gather the logs. That's a push vs. pull problem.) It is quite
    common to see a push mechanism used for this kind of task.
-
    Do you think our current solution is able to run additional
    management processes beside the main web server / load balancer
    process in a container? If no, what is missing / required to reach
    the goal? If yes, how to proceed to run for example a log
-   forwarding process?
+   forwarding process?__
 
-6. <a name="M6"></a>**[M6]** In our current solution, although the
+   <a name="M1"></a>**[A5]** Something is missing
+
+6. <a name="M6"></a>**[M6]** __In our current solution, although the
    load balancer configuration is changing dynamically, it doesn't
    follow dynamically the configuration of our distributed system when
    web servers are added or removed. If we take a closer look at the
@@ -81,19 +107,15 @@ architecture?
    lines in the `haproxy.cfg` configuration file just before we start
    `haproxy`. You clearly see that the configuration file has two
    lines and the script will replace these two lines.
-
    What happens if we add more web server nodes? Do you think it is
    really dynamic? It's far away from being a dynamic
-   configuration. Can you propose a solution to solve this?
+   configuration. Can you propose a solution to solve this?__
+
+   <a name="M1"></a>**[A6]** Blabla
 
 #### Install the tools
 
-```bash
-docker ps
-```
-
-Output : 
-
+We already set up everything in the previous lab. Here is our output after the following command : 
 ```bash
 vagrant@ubuntu-14:~$ docker ps
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                                                                NAMES
@@ -1632,6 +1654,7 @@ and reacts to nodes coming and going!
 
 ## <a name="difficulties"></a> Difficulties
 
+Windows.
 
 
 
