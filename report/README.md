@@ -183,6 +183,7 @@ which other nodes exist at any given time.
 1. Provide the docker log output for each of the containers: `ha`,
    `s1` and `s2`. 
 
+   We run the HAProxy first. The logs are avaliables under /logs/task2/Ha_Start_First/
 
 
 2. Give the answer to the question about the existing problem with the
