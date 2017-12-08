@@ -2,13 +2,16 @@
 FROM haproxy:1.5
 
 # TODO: [GEN] Replace with your name and email
-MAINTAINER Laurent Prevost <laurent.prevost@heig-vd.ch>
+MAINTAINER Thibaud Besseau thibaud.besseau@heig-vd.ch , Louana Martelli louana.martelli@heig-vd.ch
 
 # Install some tools
 # TODO: [HB] Update to install required tool to install NodeJS
 RUN apt-get update && apt-get -y install wget curl vim rsyslog
 
-# TODO: [S6] Install
+# Download and install S6 overlay
+RUN curl -sSLo /tmp/s6.tar.gz https://github.com/just-containers/s6-overlay/releases/download/v1.17.2.0/s6-overlay-amd64.tar.gz \
+  && tar xzf /tmp/s6.tar.gz -C / \
+  && rm -f /tmp/s6.tar.gz
 
 # TODO: [Serf] Install
 
@@ -16,10 +19,9 @@ RUN apt-get update && apt-get -y install wget curl vim rsyslog
 
 # TODO: [HB] Install Handlebars
 
-# TODO: [S6] Replace the two following instructions
-# Copy all the scripts and make them executable
-COPY scripts/ /scripts/
-RUN chmod +x /scripts/*.sh
+# Copy the S6 service and make the run script executable
+COPY services/ha /etc/services.d/ha
+RUN chmod +x /etc/services.d/ha/run
 
 # TODO: [Serf] Add Serf S6 setup
 
@@ -44,6 +46,5 @@ EXPOSE 80 1936
 # Define an environment variable
 ENV ROLE balancer
 
-# TODO: [S6] Replace the following instruction
-# Command executed when the container starts
-CMD [ "/scripts/run.sh" ]
+# This will start S6 as our main process in our container
+ENTRYPOINT ["/init"]
