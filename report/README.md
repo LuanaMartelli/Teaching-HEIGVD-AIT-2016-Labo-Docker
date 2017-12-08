@@ -181,23 +181,16 @@ which other nodes exist at any given time.
 **Deliverables**:
 
 1. Provide the docker log output for each of the containers: `ha`,
-   `s1` and `s2`. You need to create a folder `logs` in your
-   repository to store the files separately from the lab
-   report. For each lab task create a folder and name it using the
-   task number. No need to create a folder when there are no logs.
+   `s1` and `s2`. 
 
-   Example:
+   We run the HAProxy first. The logs are avaliables under /logs/task2/Ha_Start_First/
 
-   ```bash
-   |-- root folder
-     |-- logs
-       |-- task 1
-       |-- task 3
-       |-- ...
-   ```
 
 2. Give the answer to the question about the existing problem with the
    current solution.
+
+   First run haproxy. If you do not, the child nodes will not be linked to it
+
 
 3. Give an explanation on how `Serf` is working. Read the official
    website to get more details about the `GOSSIP` protocol used in
