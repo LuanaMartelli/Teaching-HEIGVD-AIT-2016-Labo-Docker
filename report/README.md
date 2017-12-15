@@ -215,9 +215,26 @@ this directory and set them as executable.
 1. Provide the docker log output for each of the containers:  `ha`, `s1` and `s2`.
    Put your logs in the `logs` directory you created in the previous task.
 
+   The logs are available in the files   
+   	- /logs/task3/ha.txt
+   	- /logs/task3/s1.txt
+   	- /logs/task3/s2.txt
+
+
 3. Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
    file present in the container. Put the logs in the `logs` directory in your repo.
 
+   Here are the logs we got :
+```
+	Member join script triggered
+	Member join event received from: 2a70b5b171fb with role balancer
+	Member join script triggered
+	Member join event received from: ade84b5d0a98 with role backend
+	Member join script triggered
+	Member join event received from: 2fd4ce8bff6a with role backend
+```
+   They are available in the files   
+   	- /logs/task3/serf_logs/serf.txt
 
 
 ### <a name="paragraph5"></a>Task 4: Use a template engine to easily generate configuration files
@@ -253,6 +270,11 @@ have been replaced with the data.
   ```
   RUN command 1 && command 2 && command 3
   ```
+
+  A Docker image is built up from layers. Each layer is an instruction in the Dockerfile. It is a better practice to have a minimal number of layers in an image, because the size can become fat really quickly. That's why put all commands in one RUN is a better practice. It will reduce the size of the image. On an other hand, each layer is cached, so when an image is re-built, it could go faster to not re-download all the packages. So in this case, the first solution is better. 
+  An other problem with a merge of commands, like presented here, is that it becomes quickly not really easy to read when there is a lot of instructions.  
+  Regarding the apt-get update and apt-get install, there are a lot of articles, saying that they should be put in one RUN command, because of a cache reason. A single apt-get update will be cached, as said previously, and not re-run every time you need to install something. So it might download an old version of the package. 
+
 
   There are also some articles about techniques to reduce the image
   size. Try to find them. They are talking about `squashing` or
