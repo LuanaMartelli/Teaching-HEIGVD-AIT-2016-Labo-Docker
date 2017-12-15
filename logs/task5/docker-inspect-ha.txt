@@ -1,0 +1,347 @@
+# Global configuration for HAProxy
+# http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#3
+global
+    # Bind UNIX socket to get various stats
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#stats
+    stats socket /var/run/haproxy.sock mode 600 level admin
+
+    # Bind TCP port to get various stats
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#stats
+    stats socket ipv4@0.0.0.0:9999 level admin
+
+    # Define the timeout on the stats
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#3.1-stats%20timeout
+    stats timeout 30s
+
+    # Configure the way the logging is done
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#log
+    log 127.0.0.1 local1 notice
+
+# Configure defaults for all the proxies configuration (applied for all the next sections in the configuration)
+# http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4
+defaults
+    # Enable logging
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-log
+    log     global
+
+    # The default mode for all the services
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-bind
+    mode    http
+
+    # Enable the logging of HTTP requests
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-option%20httplog
+    option  httplog
+
+    # Enable the logging of null connections
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-option%20dontlognull
+    option  dontlognull
+
+    # Configure the timeout to connect to a server
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-timeout%20connect
+    timeout connect 5000
+
+    # Configure the timeout before cutting the connection of a client
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-timeout%20client
+    timeout client  50000
+
+    # Same kind of configuration for the servers side
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-timeout%20server
+    timeout server  50000
+
+# Open the metrics HAProxy page on the port 1936 on any network interface on the host
+# http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4
+listen stats *:1936
+    # Enable HAProxy to serve stats about himself and the nodes
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-stats%20enable
+    stats enable
+
+    # Define the URI to access the stats
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-stats%20uri
+    stats uri /
+
+    # Avoid leaking more info than necessary with hiding the version of HAProxy
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-stats%20hide-version
+    stats hide-version
+
+# Define the frontend configuration. In fact, that's the part that configure how HAProxy will handle
+# the requests from the outside world:
+# http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4
+frontend localnodes
+    # Bind the port 80 to listen incoming outside connections (from the outside world)
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-bind
+    bind *:80
+
+    # Define which protocol is enabled on the binded ports.
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-mode
+    mode http
+
+    # Use the backend configuration references by the backend name section in this configuration
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-default_backend
+    default_backend nodes
+
+# Define the backend configuration. In fact, that's the part that configure what is not directly
+# accessible from the outside of the network.
+# http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4
+backend nodes
+    # Define the protocol accepted
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-mode
+    mode http
+
+    # Define the way the backend nodes are checked to know if they are alive or down
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-option%20httpchk
+    option httpchk HEAD /
+
+    # Define the balancing policy
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#balance
+    balance roundrobin
+
+    # Automatically add the X-Forwarded-For header
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-option%20forwardfor
+    # https://en.wikipedia.org/wiki/X-Forwarded-For
+    option forwardfor
+
+    # With this config, we add the header X-Forwarded-Port
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-http-request
+    http-request set-header X-Forwarded-Port %[dst_port]
+
+    # Define the list of nodes to be in the balancing mechanism
+    # http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-server
+    # HANDLEBARS START
+
+        server 037244eb875d 172.18.0.4:3000 check
+
+        server 6040af1c817f 172.18.0.3:3000 check
+
+    # HANDLEBARS END
+
+# Other links you will need later for this lab
+#
+# About cookies: http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-cookie
+root@7c75951f8414:/# exit
+exit
+vagrant@ubuntu-14:/vagrant/ha$ clear
+vagrant@ubuntu-14:/vagrant/ha$ docker inspect ha
+[
+    {
+        "Id": "7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32",
+        "Created": "2017-12-15T08:29:25.583523687Z",
+        "Path": "/init",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 13390,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2017-12-15T08:29:26.57209614Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:0881221a9e52ee36373790977a2bfd765e78a166d35fb30e7aca07fb915d296a",
+        "ResolvConfPath": "/var/lib/docker/containers/7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32/hostname",
+        "HostsPath": "/var/lib/docker/containers/7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32/hosts",
+        "LogPath": "/var/lib/docker/containers/7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32/7c75951f8414077edb3ca05b70487e8c22a489bfefaffbdf8edc07cfe3bf9c32-json.log",
+        "Name": "/ha",
+        "RestartCount": 0,
+        "Driver": "aufs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "heig",
+            "PortBindings": {
+                "1936/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "1936"
+                    }
+                ],
+                "80/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "80"
+                    }
+                ],
+                "9999/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "9999"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "CapAdd": null,
+            "CapDrop": null,
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "shareable",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DiskQuota": 0,
+            "KernelMemory": 0,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": 0,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0
+        },
+        "GraphDriver": {
+            "Data": null,
+            "Name": "aufs"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "7c75951f8414",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "1936/tcp": {},
+                "7373/tcp": {},
+                "7946/tcp": {},
+                "80/tcp": {},
+                "9999/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "HAPROXY_MAJOR=1.5",
+                "HAPROXY_VERSION=1.5.19",
+                "HAPROXY_MD5=74d49316f00e1fd9859bcac84ab04b5c",
+                "ROLE=balancer"
+            ],
+            "Cmd": null,
+            "ArgsEscaped": true,
+            "Image": "softengheigvd/ha",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": [
+                "/init"
+            ],
+            "OnBuild": null,
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "a004633a9a8783636e294570e9a67fa0fd8ef8697e045591b415a81c865fdb36",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {
+                "1936/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "1936"
+                    }
+                ],
+                "7373/tcp": null,
+                "7946/tcp": null,
+                "80/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "80"
+                    }
+                ],
+                "9999/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "9999"
+                    }
+                ]
+            },
+            "SandboxKey": "/var/run/docker/netns/a004633a9a87",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "heig": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "7c75951f8414"
+                    ],
+                    "NetworkID": "b72208dd805d138c91de100964f68b68c95629357e74c3ecbeba4978fe7fbe7a",
+                    "EndpointID": "7a86292877a07394961c6b48ef8431d635aa68eda2f8af8c289a2c347acb0751",
+                    "Gateway": "172.18.0.1",
+                    "IPAddress": "172.18.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:12:00:02",
+                    "DriverOpts": null
+                }
+            }
+        }
+    }
+]
