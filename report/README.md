@@ -438,11 +438,6 @@ drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 7c75951f8414        softengheigvd/ha       "/init"             29 minutes ago      Up 29 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
   ```
 
-4. __(Optional:) Propose a different approach to manage the list of backend
-   nodes. You do not need to implement it. You can also propose your
-   own tools or the ones you discovered online. In that case, do not
-   forget to cite your references.__
-
 
 
 ### <a name="paragraph7"></a>Task 6: Make the load balancer automatically reload the new configuration
@@ -500,8 +495,7 @@ ec303fcb4ddc        softengheigvd/webapp   "/init"             20 minutes ago   
    improvements or ways to do the things differently. If any, provide
    references to your readings for the improvements.__
 
-
-TODO
+This solution is quite good as it can manage itself. But, we could improve this solution by adding more automatism. For instance, when a node is down, there is no alert generated, we have to check it manually. It could be interesting to monitor logs and when one is down, re-create a new one with a script. 
 
 
 3. __(Optional:) Present a live demo where you add and remove a backend container.__
@@ -520,4 +514,4 @@ Another thing that has been difficult was to find all the information we needed 
 
 ## <a name="conclusion"></a> Conclusion
 
-That was nice 
+In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to automatize the work.
