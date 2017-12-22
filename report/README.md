@@ -28,6 +28,7 @@ of an app and, finally, put into practice decentralized management of web server
 The lab is divided in seven parts. The version of HAProxy used is 1.5. 
 
 
+
 ### <a name="paragraph1"></a>Task 0: Identify issues and install the tools 
 
 #### Identify issues
@@ -172,6 +173,7 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    run.
    
 
+
 ### <a name="paragraph3"></a>Task 2: Add a tool to manage membership in the web server cluster
 
 > In this task, we will focus on how to make our infrastructure more
@@ -239,6 +241,7 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 ```
    They are available in the files   
    	- /logs/task3/serf_logs/serf.txt
+
 
 
 ### <a name="paragraph5"></a>Task 4: Use a template engine to easily generate configuration files
@@ -343,6 +346,7 @@ a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago   
    say about the way we generate it? What is the problem if any?__
 
 TODO
+
 
 
 ### <a name="paragraph6"></a>Task 5: Generate a new load balancer configuration when membership changes
