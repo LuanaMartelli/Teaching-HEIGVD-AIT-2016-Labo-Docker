@@ -299,7 +299,46 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
    `docker inspect <container>`. Four files are expected.__
+
+   Files are available under /logs/task4/
+    - ha_haproxy-cfg_ha_started
    
+   ```
+   root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
+   Container a70a8df4dbf7 has joined the Serf cluster with the following IP address: 172.18.0.2
+   ``` 
+
+    - ha_haproxy-cfg_s1_started
+
+   ```
+   root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
+   Container d5a0f986f7e2 has joined the Serf cluster with the following IP address: 172.18.0.3
+   ```
+
+    - ha_haproxy-cfg_s2_started
+
+   ```
+   root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
+   Container 6cec01d549c1 has joined the Serf cluster with the following IP address: 172.18.0.4
+   ```
+   
+   
+   - docker-ps
+
+   ```
+   CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
+6cec01d549c1        softengheigvd/webapp   "/init"             6 minutes ago       Up 6 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
+d5a0f986f7e2        softengheigvd/webapp   "/init"             7 minutes ago       Up 7 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s1
+a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago      Up 10 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha 
+  ```
+
+  - docker-inspect-ha
+  - docker-inspect-s1
+  - docker-inspect-s2
+
+  These three last files are not shown here, as they are too big. 
+
+
 4. __Based on the three output files you have collected, what can you
    say about the way we generate it? What is the problem if any?__
 
@@ -329,6 +368,9 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
    `docker inspect <container>`. Four files are expected.__
+
+
+
 
 2. __Provide the list of files from the `/nodes` folder inside the `ha` container.
    One file expected with the command output.__
