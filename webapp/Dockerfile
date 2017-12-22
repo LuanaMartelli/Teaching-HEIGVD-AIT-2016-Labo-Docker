@@ -2,7 +2,7 @@
 FROM node:0.12.2-wheezy
 
 # TODO: [GEN] Replace with your name and email
-MAINTAINER Thibaud Besseau <thibaud.besseau@heig-vd.ch> , Louana Martelli <louana.martelli@heig-vd.ch>
+MAINTAINER Thibaud Besseau <thibaud.besseau@heig-vd.ch> , Luana Martelli <luana.martelli@heig-vd.ch>
 
 
 

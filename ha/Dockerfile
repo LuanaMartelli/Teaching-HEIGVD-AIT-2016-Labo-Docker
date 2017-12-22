@@ -2,7 +2,7 @@
 FROM haproxy:1.5
 
 # TODO: [GEN] Replace with your name and email
-MAINTAINER Thibaud Besseau thibaud.besseau@heig-vd.ch , Louana Martelli louana.martelli@heig-vd.ch
+MAINTAINER Thibaud Besseau thibaud.besseau@heig-vd.ch , Luana Martelli luana.martelli@heig-vd.ch
 
 # Install some tools
 # TODO: [HB] Update to install required tool to install NodeJS

@@ -1,6 +1,8 @@
 title: Lab 04 - Docker
 ---
 
+Thibaud Besseau & Luana Martelli
+
 ## Lab 04 - Docker
 
 
@@ -38,7 +40,7 @@ architecture?
    solution for a production environment? What are the main problems
    when deploying it in a production environment?__
    
-   <a name="M1"></a>**[A1]** No, it's not a good idead to user it in
+   No, it's not a good idead to user it in
    a production environment. The main problpem is that we have to 
    delacre each server manually in the conf file (it's a static 
    configuration).It is not made automatically, so it's a lof of work 
@@ -50,7 +52,7 @@ architecture?
    done. Hint: You probably have to modify some configuration and
    script files in a Docker image.__
 
-   <a name="M1"></a>**[A2]** We need to change ha/config/haproxy.cfg file
+   We need to change ha/config/haproxy.cfg file
    and add a new line : 
    ```bash
       server s3 <s3>:3000 check
@@ -67,7 +69,7 @@ architecture?
    detected some issues in the current solution. Now propose a better
    approach at a high level.__
 
-   <a name="M1"></a>**[A3]** The configuration should not be static but dynamic.
+   The configuration should not be static but dynamic.
    We should use a tool or a program to communicate with te load balancer to tell
    it which server are up or down. 
 
@@ -76,7 +78,7 @@ architecture?
   configuration. How can we manage the web app nodes in a more dynamic
   fashion?__
 
-  <a name="M1"></a>**[A4]** As said previously, we should user a special tool that 
+  As said previously, we should user a special tool that 
   will say to the load balancer all servers that are connected. For this lab, we 
   will be introduced to the serf agent. 
 
@@ -97,7 +99,7 @@ architecture?
    the goal? If yes, how to proceed to run for example a log
    forwarding process?__
 
-   <a name="M1"></a>**[A5]** We need a central tool that will bypass our 
+   We need a central tool that will bypass our 
    problem of one process per container. In this lab, we will use s6. 
 
 6. <a name="M6"></a>**[M6]** __In our current solution, although the
@@ -112,7 +114,7 @@ architecture?
    really dynamic? It's far away from being a dynamic
    configuration. Can you propose a solution to solve this?__
 
-   <a name="M1"></a>**[A6]** No, it's not, because we need to change two files to 
+   No, it's not, because we need to change two files to 
    add more nodes (see answer 2). A better solution would be that each server announces
    itself to the other and the load balancer when it's up. 
 
@@ -172,10 +174,10 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 
 ### <a name="paragraph3"></a>Task 2: Add a tool to manage membership in the web server cluster
 
-In this task, we will focus on how to make our infrastructure more
-flexible so that we can dynamically add and remove web servers. To
-achieve this goal, we will use a tool that allows each node to know
-which other nodes exist at any given time.
+> In this task, we will focus on how to make our infrastructure more
+  flexible so that we can dynamically add and remove web servers. To
+  achieve this goal, we will use a tool that allows each node to know
+  which other nodes exist at any given time.
 
 
 **Deliverables**:
@@ -204,12 +206,12 @@ which other nodes exist at any given time.
 ### <a name="paragraph4"></a>Task 3: React to membership changes
 
 
-We reached a state where we have nearly all the pieces in place to make the infrastructure
-really dynamic. At the moment, we are missing the scripts that will react to the events
-reported by `Serf`, namely member `leave` or member `join`.
+> We reached a state where we have nearly all the pieces in place to make the infrastructure
+  really dynamic. At the moment, we are missing the scripts that will react to the events
+  reported by `Serf`, namely member `leave` or member `join`.
 
-We will start by creating the scripts in [ha/scripts](ha/scripts). So create two files in
-this directory and set them as executable. 
+> We will start by creating the scripts in [ha/scripts](ha/scripts). So create two files in
+  this directory and set them as executable. 
 
 
 **Deliverables**:
@@ -241,15 +243,15 @@ this directory and set them as executable.
 
 ### <a name="paragraph5"></a>Task 4: Use a template engine to easily generate configuration files
 
-There are several ways to generate a configuration file from variables
-in a dynamic fashion. In this lab we decided to use `NodeJS` and
-`Handlebars` for the template engine.  
-In our case our template is the `HAProxy` configuration file in which
-we put placeholders written in the template language. Our data model
-is the data provided by the handler scripts of `Serf`. And the
-resulting document coming out of the template engine is a
-configuration file that HA proxy can understand where the placeholders
-have been replaced with the data.
+> There are several ways to generate a configuration file from variables
+  in a dynamic fashion. In this lab we decided to use `NodeJS` and
+  `Handlebars` for the template engine.  
+  In our case our template is the `HAProxy` configuration file in which
+  we put placeholders written in the template language. Our data model
+  is the data provided by the handler scripts of `Serf`. And the
+  resulting document coming out of the template engine is a
+  configuration file that HA proxy can understand where the placeholders
+  have been replaced with the data.
 
 
 **Deliverables**:
@@ -273,14 +275,15 @@ have been replaced with the data.
   RUN command 1 && command 2 && command 3
   ```
 
+  __There are also some articles about techniques to reduce the image
+  size. Try to find them. They are talking about `squashing` or
+  `flattening` images.__
+
   A Docker image is built up from layers. Each layer is an instruction in the Dockerfile. It is a better practice to have a minimal number of layers in an image, because the size can become fat really quickly. That's why put all commands in one RUN is a better practice. It will reduce the size of the image. On an other hand, each layer is cached, so when an image is re-built, it could go faster to not re-download all the packages. So in this case, the first solution is better. 
   An other problem with a merge of commands, like presented here, is that it becomes quickly not really easy to read when there is a lot of instructions.  
   Regarding the apt-get update and apt-get install, there are a lot of articles, saying that they should be put in one RUN command, because of a cache reason. A single apt-get update will be cached, as said previously, and not re-run every time you need to install something. So it might download an old version of the package. 
 
-
-  There are also some articles about techniques to reduce the image
-  size. Try to find them. They are talking about `squashing` or
-  `flattening` images.
+  Squash or flatten mean that multiples layers of an image will become one single layer. The result of this is to reduce the size of an image. It is a very powerful technique, howerver, it should not be used for every image. You will probably sacrify some functionnality in the process, so it's important to think about it twice. But, let say, if we use someonelse's image and it's too heavy and we want to optimize its size, it is a good tool to use.  
 
 2. __Propose a different approach to architecture our images to be able
    to reuse as much as possible what we have done. Your proposition
@@ -303,7 +306,7 @@ have been replaced with the data.
 
 ### <a name="paragraph6"></a>Task 5: Generate a new load balancer configuration when membership changes
 
-At this stage, we have:
+> At this stage, we have:
 
   - Two images with `S6` process supervisor that starts a Serf agent
     and an "application" (HAProxy or Node web app).
@@ -314,8 +317,8 @@ At this stage, we have:
   - A template engine in the `ha` image is ready to be used to
     generate the HAProxy configuration file.
 
-Now, we need to refine our `join` and `leave` scripts to generate a
-proper HAProxy configuration file.
+> Now, we need to refine our `join` and `leave` scripts to generate a
+  proper HAProxy configuration file.
 
 
 **Deliverables**:
@@ -344,13 +347,13 @@ proper HAProxy configuration file.
 
 ### <a name="paragraph7"></a>Task 6: Make the load balancer automatically reload the new configuration
 
-The only thing missing now is to make sure the configuration of
-HAProxy is up-to-date and taken into account by HAProxy.
+> The only thing missing now is to make sure the configuration of
+  HAProxy is up-to-date and taken into account by HAProxy.
 
-We will try to make HAProxy reload his config with minimal
-downtime. At the moment, we will replace the line `TODO: [CFG] Replace
-this command` in [ha/services/ha/run](ha/services/ha/run) by the
-following script part. As usual, take the time to read the comments.
+> We will try to make HAProxy reload his config with minimal
+  downtime. At the moment, we will replace the line `TODO: [CFG] Replace
+  this command` in [ha/services/ha/run](ha/services/ha/run) by the
+  following script part. As usual, take the time to read the comments.
 
 
 **Deliverables**:
@@ -373,7 +376,9 @@ following script part. As usual, take the time to read the comments.
 
 ## <a name="difficulties"></a> Difficulties
 
-Windows.
+On of the computer used for this lab is running under Windows. It was hard to set up, as all tools are done for Linux. For instance, every time we changed a line in a config file, we had to kill the virtual machine, pratically reboot the computer and start all over again.  
+
+Another thing that has been difficult was to find all the information we needed to fully understand the lab. Sometimes, we ended up in forums where people had poor explanation about the theory and it was hard to understand.
 
 
 
