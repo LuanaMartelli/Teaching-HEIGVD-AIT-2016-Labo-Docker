@@ -290,14 +290,15 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    should also try to avoid as much as possible repetitions between
    your images.__
 
+   First, we could optimize the size of the image removing all the packages we installed and that we no longer need (wget curl vim rsyslog, ...) or use an option such as --no-install-recommends.
+
 3. __Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
    after each step.  Place the output into the `logs` folder like you
    already did for the Docker logs in the previous tasks. Three files
-   are expected.__
-   
+   are expected.
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
-   `docker inspect <container>`. Four files are expected.
+   `docker inspect <container>`. Four files are expected.__
    
 4. __Based on the three output files you have collected, what can you
    say about the way we generate it? What is the problem if any?__
@@ -365,12 +366,48 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    Also provide the output of `docker ps` in a log file. At least 
    one file is expected. You can provide one output per step of your
    experimentation according to your screenshots.__
+
+   Here is an image of the HA with three nodes up and onw down :  
+  ![alt img](./img/task6/ha_stats_3nodes_up_1_down.png)
+
+
+
+  Here, there is an image with 4 nodes up :  
+  ![alt img](./img/task6/ha_stats_4nodes_up.png)
+
+  You can find in the log folder, under task6 the output of the `docker ps` when multiple nodes are running. Here is a copy : 
+
+```
+  CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
+cfb082d22922        softengheigvd/webapp   "/init"             3 seconds ago       Up 1 second         3000/tcp, 7373/tcp, 7946/tcp                                                             s4
+5bf8b5ab7cfa        softengheigvd/webapp   "/init"             7 seconds ago       Up 6 seconds        3000/tcp, 7373/tcp, 7946/tcp                                                             s3
+df2de72e62e0        softengheigvd/ha       "/init"             9 minutes ago       Up 9 minutes        0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
+ec303fcb4ddc        softengheigvd/webapp   "/init"             9 minutes ago       Up 9 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
+c241dc9788b5        softengheigvd/webapp   "/init"             9 minutes ago       Up 9 minutes        3000/tcp, 7373/tcp, 7946/tcp  
+```
    
+
+  Finally, a `docker ps` when one node is down : 
+```
+CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
+cfb082d22922        softengheigvd/webapp   "/init"             10 minutes ago      Up 10 minutes       3000/tcp, 7373/tcp, 7946/tcp                                                             s4
+5bf8b5ab7cfa        softengheigvd/webapp   "/init"             10 minutes ago      Up 10 minutes       3000/tcp, 7373/tcp, 7946/tcp                                                             s3
+df2de72e62e0        softengheigvd/ha       "/init"             20 minutes ago      Up 20 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
+ec303fcb4ddc        softengheigvd/webapp   "/init"             20 minutes ago      Up 20 minutes       3000/tcp, 7373/tcp, 7946/tcp 
+```
+
+
 2. __Give your own feelings about the final solution. Propose
    improvements or ways to do the things differently. If any, provide
    references to your readings for the improvements.__
 
+
+TODO
+
+
 3. __(Optional:) Present a live demo where you add and remove a backend container.__
+
+The demonstration was made on the 22nd December. 
 
 
 
