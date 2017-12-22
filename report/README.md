@@ -130,12 +130,12 @@ c160fa8469fa        softengheigvd/webapp   "/scripts/run.sh"        24 seconds a
 
 **Deliverables**:
 
-1. Take a screenshot of the stats page of HAProxy at
-   <http://192.168.42.42:1936>. You should see your backend nodes.
+1. __Take a screenshot of the stats page of HAProxy at
+   <http://192.168.42.42:1936>. You should see your backend nodes.__
 
    ![alt img](./img/task0_answer1.PNG)
 
-2. Give the URL of your repository URL in the lab report.
+2. __Give the URL of your repository URL in the lab report.__
 
 https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 
@@ -150,17 +150,17 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 
 **Deliverables**:
 
-1. Take a screenshot of the stats page of HAProxy at
+1. __Take a screenshot of the stats page of HAProxy at
    <http://192.168.42.42:1936>. You should see your backend nodes. It
-   should be really similar to the screenshot of the previous task.
+   should be really similar to the screenshot of the previous task.__
 
    ![alt img](./img/task1_ha_statistics.png)
 
-2. Describe your difficulties for this task and your understanding of
+2. __Describe your difficulties for this task and your understanding of
    what is happening during this task. Explain in your own words why
    are we installing a process supervisor. Do not hesitate to do more
    research and to find more articles on that topic to illustrate the
-   problem.
+   problem.__
 
    As said in the [A5](#A5), we cannot run more than one process per 
    container. Thanks to a supervisor, we ca bypass this limitation. 
@@ -180,22 +180,24 @@ which other nodes exist at any given time.
 
 **Deliverables**:
 
-1. Provide the docker log output for each of the containers: `ha`,
-   `s1` and `s2`. 
+1. __Provide the docker log output for each of the containers: `ha`,
+   `s1` and `s2`.__
 
    We run the HAProxy first. The logs are avaliables under /logs/task2/Ha_Start_First/
 
 
-2. Give the answer to the question about the existing problem with the
-   current solution.
+2. __Give the answer to the question about the existing problem with the
+   current solution.__
 
    First run haproxy. If you do not, the child nodes will not be linked to it
 
 
-3. Give an explanation on how `Serf` is working. Read the official
+3. __Give an explanation on how `Serf` is working. Read the official
    website to get more details about the `GOSSIP` protocol used in
    `Serf`. Try to find other solutions that can be used to solve
-   similar situations where we need some auto-discovery mechanism.
+   similar situations where we need some auto-discovery mechanism.__
+
+   TODO
 
 
 
@@ -212,8 +214,8 @@ this directory and set them as executable.
 
 **Deliverables**:
 
-1. Provide the docker log output for each of the containers:  `ha`, `s1` and `s2`.
-   Put your logs in the `logs` directory you created in the previous task.
+1. __Provide the docker log output for each of the containers:  `ha`, `s1` and `s2`.
+   Put your logs in the `logs` directory you created in the previous task.__
 
    The logs are available in the files   
    	- /logs/task3/ha.txt
@@ -221,8 +223,8 @@ this directory and set them as executable.
    	- /logs/task3/s2.txt
 
 
-3. Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
-   file present in the container. Put the logs in the `logs` directory in your repo.
+3. __Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
+   file present in the container. Put the logs in the `logs` directory in your repo.__
 
    Here are the logs we got :
 ```
@@ -252,12 +254,12 @@ have been replaced with the data.
 
 **Deliverables**:
 
-1. You probably noticed when we added `xz-utils`, we have to rebuild
+1. __You probably noticed when we added `xz-utils`, we have to rebuild
    the whole image which took some time. What can we do to mitigate
    that? Take a look at the Docker documentation on
    [image layers](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/#images-and-layers).
    Tell us about the pros and cons to merge as much as possible of the
-   command. In other words, compare:
+   command. In other words, compare:__
 
   ```
   RUN command 1
@@ -265,7 +267,7 @@ have been replaced with the data.
   RUN command 3
   ```
 
-  vs.
+  __vs.__
 
   ```
   RUN command 1 && command 2 && command 3
@@ -280,22 +282,22 @@ have been replaced with the data.
   size. Try to find them. They are talking about `squashing` or
   `flattening` images.
 
-2. Propose a different approach to architecture our images to be able
+2. __Propose a different approach to architecture our images to be able
    to reuse as much as possible what we have done. Your proposition
    should also try to avoid as much as possible repetitions between
-   your images.
+   your images.__
 
-3. Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
+3. __Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
    after each step.  Place the output into the `logs` folder like you
    already did for the Docker logs in the previous tasks. Three files
-   are expected.
+   are expected.__
    
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
    `docker inspect <container>`. Four files are expected.
    
-4. Based on the three output files you have collected, what can you
-   say about the way we generate it? What is the problem if any?
+4. __Based on the three output files you have collected, what can you
+   say about the way we generate it? What is the problem if any?__
 
 
 
@@ -318,27 +320,25 @@ proper HAProxy configuration file.
 
 **Deliverables**:
 
-1. Provide the file `/usr/local/etc/haproxy/haproxy.cfg` generated in
+1. __Provide the file `/usr/local/etc/haproxy/haproxy.cfg` generated in
    the `ha` container after each step. Three files are expected.
-   
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
-   `docker inspect <container>`. Four files are expected.
+   `docker inspect <container>`. Four files are expected.__
 
-2. Provide the list of files from the `/nodes` folder inside the `ha` container.
-   One file expected with the command output.
+2. __Provide the list of files from the `/nodes` folder inside the `ha` container.
+   One file expected with the command output.__
 
-3. Provide the configuration file after you stopped one container and
+3. __Provide the configuration file after you stopped one container and
    the list of nodes present in the `/nodes` folder. One file expected
    with the command output. Two files are expected.
-   
-    In addition, provide a log file containing the output of the 
-   `docker ps` console. One file expected.
+   In addition, provide a log file containing the output of the
+   `docker ps` console. One file expected.__
 
-4. (Optional:) Propose a different approach to manage the list of backend
+4. __(Optional:) Propose a different approach to manage the list of backend
    nodes. You do not need to implement it. You can also propose your
    own tools or the ones you discovered online. In that case, do not
-   forget to cite your references.
+   forget to cite your references.__
 
 
 
@@ -355,20 +355,19 @@ following script part. As usual, take the time to read the comments.
 
 **Deliverables**:
 
-1. Take a screenshots of the HAProxy stat page showing more than 2 web
+1. __Take a screenshots of the HAProxy stat page showing more than 2 web
    applications running. Additional screenshots are welcome to see a
    sequence of experimentations like shutting down a node and starting
    more nodes.
-   
    Also provide the output of `docker ps` in a log file. At least 
    one file is expected. You can provide one output per step of your
-   experimentation according to your screenshots.
+   experimentation according to your screenshots.__
    
-2. Give your own feelings about the final solution. Propose
+2. __Give your own feelings about the final solution. Propose
    improvements or ways to do the things differently. If any, provide
-   references to your readings for the improvements.
+   references to your readings for the improvements.__
 
-3. (Optional:) Present a live demo where you add and remove a backend container.
+3. __(Optional:) Present a live demo where you add and remove a backend container.__
 
 
 
