@@ -342,6 +342,7 @@ a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago   
 4. __Based on the three output files you have collected, what can you
    say about the way we generate it? What is the problem if any?__
 
+TODO
 
 
 ### <a name="paragraph6"></a>Task 5: Generate a new load balancer configuration when membership changes
@@ -370,16 +371,72 @@ a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago   
    `docker inspect <container>`. Four files are expected.__
 
 
+   All files are availables under the folder /logs/task5.  
+   Here is a copy of some : 
+
+   - haproxy-config-ha-started
+   - haproxy-config-s1-started
+   - haproxy-config-s2-started
+
+   This files are not shown here, as they are too big.
+
+   - docker-ps
+
+   ```
+   CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
+037244eb875d        softengheigvd/webapp   "/init"             2 minutes ago       Up 2 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
+6040af1c817f        softengheigvd/webapp   "/init"             8 minutes ago       Up 8 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s1
+7c75951f8414        softengheigvd/ha       "/init"             16 minutes ago      Up 16 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
+  ```
+
+  - docker-inspect-ha
+  - docker-inspect-s1
+  - docker-inspect-s2
+
+  These three last files are not shown here, as they are too big.
 
 
 2. __Provide the list of files from the `/nodes` folder inside the `ha` container.
    One file expected with the command output.__
+
+   - nodes_directory_list
+
+   ```
+   root@7c75951f8414:/nodes# ls -la
+total 16
+drwxr-xr-x  2 root root 4096 Dec 15 08:42 .
+drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
+-rw-r--r--  1 root root   24 Dec 15 08:42 037244eb875d
+-rw-r--r--  1 root root   24 Dec 15 08:37 6040af1c817f 
+   ```
 
 3. __Provide the configuration file after you stopped one container and
    the list of nodes present in the `/nodes` folder. One file expected
    with the command output. Two files are expected.
    In addition, provide a log file containing the output of the
    `docker ps` console. One file expected.__
+
+   - haproxy-config-after-s2-stop 
+
+   Not shown here, as too big 
+
+   - nodes_directory_list_after_s2_stop
+
+   ```
+   root@7c75951f8414:/nodes# ls -la
+total 12
+drwxr-xr-x  2 root root 4096 Dec 15 08:54 .
+drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
+-rw-r--r--  1 root root   24 Dec 15 08:37 6040af1c817f
+   ```
+
+   - docker_ps_after-s2-stop
+
+  ```
+  CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
+6040af1c817f        softengheigvd/webapp   "/init"             21 minutes ago      Up 21 minutes       3000/tcp, 7373/tcp, 7946/tcp                                                             s1
+7c75951f8414        softengheigvd/ha       "/init"             29 minutes ago      Up 29 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
+  ```
 
 4. __(Optional:) Propose a different approach to manage the list of backend
    nodes. You do not need to implement it. You can also propose your
