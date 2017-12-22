@@ -519,3 +519,4 @@ Another thing that has been difficult was to find all the information we needed 
 ## <a name="conclusion"></a> Conclusion
 
 In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to automatize the work.
+
