@@ -72,7 +72,9 @@ architecture?
 
    The configuration should not be static but dynamic.
    We should use a tool or a program to communicate with te load balancer to tell
-   it which server are up or down. 
+   it which server are up or down. Thanks to this, the configuration (when a new 
+   node is created or when one is down) will be done automatically and it would be 
+   less painful for the system administrator. 
 
 4. <a name="M4"></a>**[M4]** __You probably noticed that the list of web
   application nodes is hardcoded in the load balancer
@@ -81,7 +83,8 @@ architecture?
 
   As said previously, we should user a special tool that 
   will say to the load balancer all servers that are connected. For this lab, we 
-  will be introduced to the serf agent. 
+  will be introduced to the serf agent. Basically, its job is to notify the load 
+  balancer when a node is up or down.
 
 5. <a name="M5"></a>**[M5]** __In the physical or virtual machines of a
    typical infrastructure we tend to have not only one main process
@@ -100,8 +103,10 @@ architecture?
    the goal? If yes, how to proceed to run for example a log
    forwarding process?__
 
-   We need a central tool that will bypass our 
-   problem of one process per container. In this lab, we will use s6. 
+   We need a central tool that will bypass our problem of one process per container. 
+   Right now, only one process can run so we cannot log the nodes. 
+   It's a problem because if we want to maintain correctly our application, we need to 
+   keep a trace somewhere and, if possible, we want to do it automatically. 
 
 6. <a name="M6"></a>**[M6]** __In our current solution, although the
    load balancer configuration is changing dynamically, it doesn't
@@ -115,8 +120,8 @@ architecture?
    really dynamic? It's far away from being a dynamic
    configuration. Can you propose a solution to solve this?__
 
-   No, it's not, because we need to change two files to 
-   add more nodes (see answer 2). A better solution would be that each server announces
+   No, it's not, because we need to change two files to add more nodes 
+   (see answer 2). A better solution would be that each server announces
    itself to the other and the load balancer when it's up. 
 
 #### Install the tools
@@ -170,8 +175,9 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    Now, we will be able to run a server and a process to log it. 
    The main problem for this part was to understand all the theroy 
    behind the idea of a supervisor process and how Docker / virtual machines
-   run.
-   
+   run. Fortunately, there are pretty good tutorials over the Internet to
+   explain everything. For the manipulations, we did not have difficulties, as
+   everything is well describle. 
 
 
 ### <a name="paragraph3"></a>Task 2: Add a tool to manage membership in the web server cluster
@@ -187,13 +193,19 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 1. __Provide the docker log output for each of the containers: `ha`,
    `s1` and `s2`.__
 
-   We run the HAProxy first. The logs are avaliables under /logs/task2/Ha_Start_First/
+   We run the HAProxy first. The logs are avaliables under the folder 
+   /logs/task2/Ha_Start_First/
+
+  
+   The details of the output are not shown here, as they are too big. 
 
 
 2. __Give the answer to the question about the existing problem with the
    current solution.__
 
-   First run haproxy. If you do not, the child nodes will not be linked to it
+   The problem is that for now, a node must join a node that is already existing.
+   If not, it will create its own cluster. In our case, we need to run haproxy first.  
+   If you do not, the child nodes will not be linked to it.
 
 
 3. __Give an explanation on how `Serf` is working. Read the official
@@ -201,7 +213,14 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    `Serf`. Try to find other solutions that can be used to solve
    similar situations where we need some auto-discovery mechanism.__
 
-   TODO
+   Serf is a tool for cluster membership, as it is said in documentation. 
+   Basically, it stores every nodes in one cluster and creates a network
+   between them. Thanks to this, all nodes can talk to each others and notify 
+   whenever one leaves or joins the group.  
+   Moreover, it can propagates events, invokes event handlers, detects failures and
+   so on.  
+   Serf uses what is called the gossip channel. Whenever a node gets in or leaves 
+   the cluster, all others nodes in the cluster are told. The channel uses UDP protocole. 
 
 
 
@@ -227,7 +246,7 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    	- /logs/task3/s2.txt
 
 
-3. __Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
+2. __Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
    file present in the container. Put the logs in the `logs` directory in your repo.__
 
    Here are the logs we got :
@@ -293,7 +312,15 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    should also try to avoid as much as possible repetitions between
    your images.__
 
-   First, we could optimize the size of the image removing all the packages we installed and that we no longer need (wget curl vim rsyslog, ...) or use an option such as --no-install-recommends.
+   First, we have to do what is explained in the previous question. Making 
+   all instructions in one commands. It will reduce the number of layers. Then,   
+   we could optimize the size of the image removing all the packages we installed 
+   and that we no longer need (wget curl vim rsyslog, ...) or use an option such as 
+   --no-install-recommends.  
+   Since we know that Docker caches each layers and reuses them when it is needed, we 
+   could separated the instruction that will be-reused in other Dockerfiles. Like this,
+   when Docker builds an image and had already cached one of the layers, it will simply
+   reuse it. 
 
 3. __Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
    after each step.  Place the output into the `logs` folder like you
@@ -504,7 +531,7 @@ This solution is quite good as it can manage itself. But, we could improve this 
 
 3. __(Optional:) Present a live demo where you add and remove a backend container.__
 
-The demonstration was made on the 22nd December. 
+The demonstration was made on the 22nd of December. 
 
 
 
@@ -518,5 +545,5 @@ Another thing that has been difficult was to find all the information we needed 
 
 ## <a name="conclusion"></a> Conclusion
 
-In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to automatize the work.
+In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to automatize the work. The lab was quite long to realize, espacially because we hab to read a lot of documentation, but it the end, we learnt a lots about Docker and load balancing, so it was nice. 
 
