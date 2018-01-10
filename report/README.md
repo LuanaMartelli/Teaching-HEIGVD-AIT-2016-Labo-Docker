@@ -20,6 +20,7 @@ Thibaud Besseau & Luana Martelli
 
 
 
+
 ### Introduction <a name="introduction"></a>
 
 The aim of this lab is to build our own Docker image. Through these steps, we'll become 
@@ -37,21 +38,23 @@ Suppose further currently your web servers and your load balancer are
 deployed like in the previous lab. What are the issues with this
 architecture? 
 
-1. <a name="M1"></a>**[M1]** __Do you think we can use the current
+1. <a name="M1"></a><b>[M1]</b> <b>Do you think we can use the current
    solution for a production environment? What are the main problems
-   when deploying it in a production environment?__
-   
+   when deploying it in a production environment?</b>
+
    No, it's not a good idead to use it in a production environment. 
    The main problpem is that we have to delacre each server manually 
    in the conf file (it's a static configuration).It is not made automatically, 
    so it's a lof of work to maintain. Beside, each time we add a server, 
    we need to reboot. 
 
-2. <a name="M2"></a>**[M2]** __Describe what you need to do to add new
+   ​
+
+2. <a name="M2"></a><b>[M2]</b> <b>Describe what you need to do to add new
    `webapp` container to the infrastructure. Give the exact steps of
    what you have to do without modifiying the way the things are
    done. Hint: You probably have to modify some configuration and
-   script files in a Docker image.__
+   script files in a Docker image.</b>
 
    We need to change ha/config/haproxy.cfg file
    and add a new line : 
@@ -66,9 +69,9 @@ architecture?
    it's done, we can normally run the ha container and don't forget to run also
    the new server s3.
 
-3. <a name="M3"></a>**[M3]** __Based on your previous answers, you have
+3. <a name="M3"></a><b>[M3]</b> <b>Based on your previous answers, you have
    detected some issues in the current solution. Now propose a better
-   approach at a high level.__
+   approach at a high level.</b>
 
    The configuration should not be static but dynamic.
    We should use a tool or a program to communicate with te load balancer to tell
@@ -76,17 +79,21 @@ architecture?
    node is created or when one is down) will be done automatically and it would be 
    less painful for the system administrator. 
 
-4. <a name="M4"></a>**[M4]** __You probably noticed that the list of web
+   ​
+
+4. <a name="M4"></a><b>[M4]</b> <b>You probably noticed that the list of web
   application nodes is hardcoded in the load balancer
   configuration. How can we manage the web app nodes in a more dynamic
-  fashion?__
+  fashion?</b>
 
   As said previously, we should user a special tool that 
   will say to the load balancer all servers that are connected. For this lab, we 
   will be introduced to the serf agent. Basically, its job is to notify the load 
   balancer when a node is up or down.
 
-5. <a name="M5"></a>**[M5]** __In the physical or virtual machines of a
+  ​
+
+5. <a name="M5"></a><b>[M5]</b> <b>In the physical or virtual machines of a
    typical infrastructure we tend to have not only one main process
    (like the web server or the load balancer) running, but a few
    additional processes on the side to perform management tasks.
@@ -101,14 +108,16 @@ architecture?
    management processes beside the main web server / load balancer
    process in a container? If no, what is missing / required to reach
    the goal? If yes, how to proceed to run for example a log
-   forwarding process?__
+   forwarding process?</b>
 
    We need a central tool that will bypass our problem of one process per container. 
    Right now, only one process can run so we cannot log the nodes. 
    It's a problem because if we want to maintain correctly our application, we need to 
    keep a trace somewhere and, if possible, we want to do it automatically. 
 
-6. <a name="M6"></a>**[M6]** __In our current solution, although the
+   ​
+
+6. <a name="M6"></a><b>[M6]</b> <b>In our current solution, although the
    load balancer configuration is changing dynamically, it doesn't
    follow dynamically the configuration of our distributed system when
    web servers are added or removed. If we take a closer look at the
@@ -118,11 +127,13 @@ architecture?
    lines and the script will replace these two lines.
    What happens if we add more web server nodes? Do you think it is
    really dynamic? It's far away from being a dynamic
-   configuration. Can you propose a solution to solve this?__
+   configuration. Can you propose a solution to solve this?</b>
 
    No, it's not, because we need to change two files to add more nodes 
    (see answer 2). A better solution would be that each server announces
    itself to the other and the load balancer when it's up. 
+
+   ​
 
 #### Install the tools
 
@@ -136,39 +147,40 @@ c160fa8469fa        softengheigvd/webapp   "/scripts/run.sh"        24 seconds a
 ```
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Take a screenshot of the stats page of HAProxy at
-   <http://192.168.42.42:1936>. You should see your backend nodes.__
+1. <b>Take a screenshot of the stats page of HAProxy at
+   <http://192.168.42.42:1936>. You should see your backend nodes.</b>
 
    ![alt img](./img/task0_answer1.PNG)
 
-2. __Give the URL of your repository URL in the lab report.__
+2. <b>Give the URL of your repository URL in the lab report.</b>
 
 https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
+
 
 
 ### <a name="paragraph2"></a>Task 1: Add a process supervisor to run several processes
 
 > In this task, we will learn to install a process supervisor that
-  will help us to solve the issue presented in the question
-  [M5](#M5). Installing a process supervisor gives us the ability to
-  run multiple processes at the same time in a Docker environment.
+>   will help us to solve the issue presented in the question
+>   [M5](#M5). Installing a process supervisor gives us the ability to
+>   run multiple processes at the same time in a Docker environment.
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Take a screenshot of the stats page of HAProxy at
+1. <b>Take a screenshot of the stats page of HAProxy at
    <http://192.168.42.42:1936>. You should see your backend nodes. It
-   should be really similar to the screenshot of the previous task.__
+   should be really similar to the screenshot of the previous task.</b>
 
    ![alt img](./img/task1_ha_statistics.png)
 
-2. __Describe your difficulties for this task and your understanding of
+2. <b>Describe your difficulties for this task and your understanding of
    what is happening during this task. Explain in your own words why
    are we installing a process supervisor. Do not hesitate to do more
    research and to find more articles on that topic to illustrate the
-   problem.__
+   problem.</b>
 
    As said in the [A5](#A5), we cannot run more than one process per 
    container. Thanks to a supervisor, we ca bypass this limitation. 
@@ -180,38 +192,40 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    everything is well describle. 
 
 
+
+
 ### <a name="paragraph3"></a>Task 2: Add a tool to manage membership in the web server cluster
 
 > In this task, we will focus on how to make our infrastructure more
-  flexible so that we can dynamically add and remove web servers. To
-  achieve this goal, we will use a tool that allows each node to know
-  which other nodes exist at any given time.
+>   flexible so that we can dynamically add and remove web servers. To
+>   achieve this goal, we will use a tool that allows each node to know
+>   which other nodes exist at any given time.
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Provide the docker log output for each of the containers: `ha`,
-   `s1` and `s2`.__
+1. <b>Provide the docker log output for each of the containers: `ha`,
+   `s1` and `s2`.</b>
 
    We run the HAProxy first. The logs are avaliables under the folder 
    /logs/task2/Ha_Start_First/
 
-  
+
    The details of the output are not shown here, as they are too big. 
 
 
-2. __Give the answer to the question about the existing problem with the
-   current solution.__
+2. <b>Give the answer to the question about the existing problem with the
+   current solution.</b>
 
    The problem is that for now, a node must join a node that is already existing.
    If not, it will create its own cluster. In our case, we need to run haproxy first.  
    If you do not, the child nodes will not be linked to it.
 
 
-3. __Give an explanation on how `Serf` is working. Read the official
+3. <b>Give an explanation on how `Serf` is working. Read the official
    website to get more details about the `GOSSIP` protocol used in
    `Serf`. Try to find other solutions that can be used to solve
-   similar situations where we need some auto-discovery mechanism.__
+   similar situations where we need some auto-discovery mechanism.</b>
 
    Serf is a tool for cluster membership, as it is said in documentation. 
    Basically, it stores every nodes in one cluster and creates a network
@@ -224,21 +238,22 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 
 
 
+
 ### <a name="paragraph4"></a>Task 3: React to membership changes
 
 
 > We reached a state where we have nearly all the pieces in place to make the infrastructure
-  really dynamic. At the moment, we are missing the scripts that will react to the events
-  reported by `Serf`, namely member `leave` or member `join`.
+>   really dynamic. At the moment, we are missing the scripts that will react to the events
+>   reported by `Serf`, namely member `leave` or member `join`.
 
 > We will start by creating the scripts in [ha/scripts](ha/scripts). So create two files in
-  this directory and set them as executable. 
+>   this directory and set them as executable. 
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Provide the docker log output for each of the containers:  `ha`, `s1` and `s2`.
-   Put your logs in the `logs` directory you created in the previous task.__
+1. <b>Provide the docker log output for each of the containers:  `ha`, `s1` and `s2`.
+   Put your logs in the `logs` directory you created in the previous task.</b>
 
    The logs are available in the files   
    	- /logs/task3/ha.txt
@@ -246,8 +261,8 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    	- /logs/task3/s2.txt
 
 
-2. __Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
-   file present in the container. Put the logs in the `logs` directory in your repo.__
+2. <b>Provide the logs from the `ha` container gathered directly from the `/var/log/serf.log`
+   file present in the container. Put the logs in the `logs` directory in your repo.</b>
 
    Here are the logs we got :
 ```
@@ -259,31 +274,32 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
 	Member join event received from: 2fd4ce8bff6a with role backend
 ```
    They are available in the files   
-   	- /logs/task3/serf_logs/serf.txt
+    -  /logs/task3/serf_logs/serf.txt
 
+       ​
 
 
 ### <a name="paragraph5"></a>Task 4: Use a template engine to easily generate configuration files
 
 > There are several ways to generate a configuration file from variables
-  in a dynamic fashion. In this lab we decided to use `NodeJS` and
-  `Handlebars` for the template engine.  
-  In our case our template is the `HAProxy` configuration file in which
-  we put placeholders written in the template language. Our data model
-  is the data provided by the handler scripts of `Serf`. And the
-  resulting document coming out of the template engine is a
-  configuration file that HA proxy can understand where the placeholders
-  have been replaced with the data.
+>   in a dynamic fashion. In this lab we decided to use `NodeJS` and
+>   `Handlebars` for the template engine.  
+>   In our case our template is the `HAProxy` configuration file in which
+>   we put placeholders written in the template language. Our data model
+>   is the data provided by the handler scripts of `Serf`. And the
+>   resulting document coming out of the template engine is a
+>   configuration file that HA proxy can understand where the placeholders
+>   have been replaced with the data.
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __You probably noticed when we added `xz-utils`, we have to rebuild
+1. <b>You probably noticed when we added `xz-utils`, we have to rebuild
    the whole image which took some time. What can we do to mitigate
    that? Take a look at the Docker documentation on
    [image layers](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/#images-and-layers).
    Tell us about the pros and cons to merge as much as possible of the
-   command. In other words, compare:__
+   command. In other words, compare:</b>
 
 ```
   RUN command 1
@@ -291,15 +307,15 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
   RUN command 3
 ```
 
-  __vs.__
+  <b>vs.</b>
 
 ```
   RUN command 1 && command 2 && command 3
 ```
 
-  __There are also some articles about techniques to reduce the image
+  <b>There are also some articles about techniques to reduce the image
   size. Try to find them. They are talking about `squashing` or
-  `flattening` images.__
+  `flattening` images.</b>
 
   A Docker image is built up from layers. Each layer is an instruction in the Dockerfile. 
   It is a better practice to have a minimal number of layers in an image, because the size 
@@ -307,7 +323,7 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
   It will reduce the size of the image. On an other hand, each layer is cached, so when an 
   image is re-built, it could go faster to not re-download all the packages. So in this case, 
   the first solution is better. 
-  
+
   An other problem with a merge of commands, like presented here, is that it becomes quickly not 
   really easy to read when there is a lot of instructions. Regarding the apt-get update and apt-get 
   install, there are a lot of articles, saying that they should be put in one RUN command, because 
@@ -320,37 +336,38 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
   to think about it twice. But, let say, if we use someonelse's image and it's too heavy and we want to 
   optimize its size, it is a good tool to use.  
 
-2. __Propose a different approach to architecture our images to be able
-   to reuse as much as possible what we have done. Your proposition
-   should also try to avoid as much as possible repetitions between
-   your images.__
+2. <b>Propose a different approach to architecture our images to be able to reuse as much as possible 
 
-   First, we have to do what is explained in the previous question. Making 
-   all instructions in one commands. It will reduce the number of layers. Then,   
-   we could optimize the size of the image removing all the packages we installed 
-   and that we no longer need (wget curl vim rsyslog, ...) or use an option such as 
-   --no-install-recommends.  
+   what we have done. Your proposition should also try to avoid as much as possible repetitions between 
 
-   Since we know that Docker caches each layers and reuses them when it is needed, we 
-   could separated the instruction that will be-reused in other Dockerfiles. Like this,
-   when Docker builds an image and had already cached one of the layers, it will simply
-   reuse it. 
+   your images.</b>
 
-3. __Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
+First, we have to do what is explained in the previous question. Making 
+all instructions in one commands. It will reduce the number of layers. Then,   
+we could optimize the size of the image removing all the packages we installed 
+and that we no longer need (wget curl vim rsyslog, ...) or use an option such as 
+--no-install-recommends.  
+
+Since we know that Docker caches each layers and reuses them when it is needed, we 
+could separated the instruction that will be-reused in other Dockerfiles. Like this,
+when Docker builds an image and had already cached one of the layers, it will simply
+reuse it. 
+
+1. <b>Provide the `/tmp/haproxy.cfg` file generated in the `ha` container
    after each step.  Place the output into the `logs` folder like you
    already did for the Docker logs in the previous tasks. Three files
    are expected.
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
-   `docker inspect <container>`. Four files are expected.__
+   `docker inspect <container>`. Four files are expected.</b>
 
    Files are available under /logs/task4/
     - ha_haproxy-cfg_ha_started
-   
+
 ```
    root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
    Container a70a8df4dbf7 has joined the Serf cluster with the following IP address: 172.18.0.2
-``` 
+```
 
     - ha_haproxy-cfg_s1_started
 
@@ -365,8 +382,8 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
    Container 6cec01d549c1 has joined the Serf cluster with the following IP address: 172.18.0.4
 ```
-   
-   
+
+
    - docker-ps
 
 ```
@@ -383,8 +400,8 @@ a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago   
   These three last files are not shown here, as they are too big. 
 
 
-4. __Based on the three output files you have collected, what can you
-   say about the way we generate it? What is the problem if any?__
+4. <b>Based on the three output files you have collected, what can you
+   say about the way we generate it? What is the problem if any?</b>
 
 The problem is in a template file. We can see that after each step the configuration 
 file is erased and contains only the information about the new member of the serf cluster. 
@@ -414,16 +431,16 @@ But this solution add a new problem because the old cluster's members are never 
     generate the HAProxy configuration file.
 
 > Now, we need to refine our `join` and `leave` scripts to generate a
-  proper HAProxy configuration file.
+>   proper HAProxy configuration file.
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Provide the file `/usr/local/etc/haproxy/haproxy.cfg` generated in
+1. <b>Provide the file `/usr/local/etc/haproxy/haproxy.cfg` generated in
    the `ha` container after each step. Three files are expected.
    In addition, provide a log file containing the output of the 
    `docker ps` console and another file (per container) with
-   `docker inspect <container>`. Four files are expected.__
+   `docker inspect <container>`. Four files are expected.</b>
 
 
    All files are availables under the folder /logs/task5.  
@@ -451,8 +468,8 @@ But this solution add a new problem because the old cluster's members are never 
   These three last files are not shown here, as they are too big.
 
 
-2. __Provide the list of files from the `/nodes` folder inside the `ha` container.
-   One file expected with the command output.__
+2. <b>Provide the list of files from the `/nodes` folder inside the `ha` container.
+   One file expected with the command output.</b>
 
    - nodes_directory_list
 
@@ -465,11 +482,11 @@ drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 -rw-r--r--  1 root root   24 Dec 15 08:37 6040af1c817f 
 ```
 
-3. __Provide the configuration file after you stopped one container and
+3. <b>Provide the configuration file after you stopped one container and
    the list of nodes present in the `/nodes` folder. One file expected
    with the command output. Two files are expected.
    In addition, provide a log file containing the output of the
-   `docker ps` console. One file expected.__
+   `docker ps` console. One file expected.</b>
 
    - haproxy-config-after-s2-stop 
 
@@ -498,26 +515,26 @@ drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 ### <a name="paragraph7"></a>Task 6: Make the load balancer automatically reload the new configuration
 
 > The only thing missing now is to make sure the configuration of
-  HAProxy is up-to-date and taken into account by HAProxy.
+>   HAProxy is up-to-date and taken into account by HAProxy.
 
 > We will try to make HAProxy reload his config with minimal
-  downtime. At the moment, we will replace the line `TODO: [CFG] Replace
-  this command` in [ha/services/ha/run](ha/services/ha/run) by the
-  following script part. As usual, take the time to read the comments.
+>   downtime. At the moment, we will replace the line `TODO: [CFG] Replace
+>   this command` in [ha/services/ha/run](ha/services/ha/run) by the
+>   following script part. As usual, take the time to read the comments.
 
 
-**Deliverables**:
+<b>Deliverables</b>:
 
-1. __Take a screenshots of the HAProxy stat page showing more than 2 web
+1. <b>Take a screenshots of the HAProxy stat page showing more than 2 web
    applications running. Additional screenshots are welcome to see a
    sequence of experimentations like shutting down a node and starting
    more nodes.
    Also provide the output of `docker ps` in a log file. At least 
    one file is expected. You can provide one output per step of your
-   experimentation according to your screenshots.__
+   experimentation according to your screenshots.</b>
 
    Here is an image of the HA with three nodes up and onw down :  
-  ![alt img](./img/task6/ha_stats_3nodes_up_1_down.png)
+     ![alt img](./img/task6/ha_stats_3nodes_up_1_down.png)
 
 
 
@@ -534,7 +551,7 @@ df2de72e62e0        softengheigvd/ha       "/init"             9 minutes ago    
 ec303fcb4ddc        softengheigvd/webapp   "/init"             9 minutes ago       Up 9 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
 c241dc9788b5        softengheigvd/webapp   "/init"             9 minutes ago       Up 9 minutes        3000/tcp, 7373/tcp, 7946/tcp  
 ```
-   
+
 
   Finally, a `docker ps` when one node is down : 
 ```
@@ -546,9 +563,9 @@ ec303fcb4ddc        softengheigvd/webapp   "/init"             20 minutes ago   
 ```
 
 
-2. __Give your own feelings about the final solution. Propose
+2. <b>Give your own feelings about the final solution. Propose
    improvements or ways to do the things differently. If any, provide
-   references to your readings for the improvements.__
+   references to your readings for the improvements.</b>
 
 This solution is quite good as it can manage itself. But, we could improve this solution 
 by adding more automatism. For instance, when a node is down, there is no alert generated, 
@@ -556,7 +573,7 @@ we have to check it manually. It could be interesting to monitor logs and when o
 re-create a new one with a script. 
 
 
-3. __(Optional:) Present a live demo where you add and remove a backend container.__
+3. <b>(Optional:) Present a live demo where you add and remove a backend container.</b>
 
 The demonstration was made on the 22nd of December. 
 
@@ -573,6 +590,7 @@ To fully understand the lab's theroy, we searched for informations and, sometime
 up in forums where people had poor explanation about the theory and it was hard to understand.
 
 All the manipulations were well describles, so there were no others particular diffculties. 
+
 
 
 ## <a name="conclusion"></a> Conclusion
