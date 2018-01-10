@@ -41,11 +41,11 @@ architecture?
    solution for a production environment? What are the main problems
    when deploying it in a production environment?__
    
-   No, it's not a good idead to user it in
-   a production environment. The main problpem is that we have to 
-   delacre each server manually in the conf file (it's a static 
-   configuration).It is not made automatically, so it's a lof of work 
-   to maintain. Beside, each time we add a server, we need to reboot. 
+   No, it's not a good idead to use it in a production environment. 
+   The main problpem is that we have to delacre each server manually 
+   in the conf file (it's a static configuration).It is not made automatically, 
+   so it's a lof of work to maintain. Beside, each time we add a server, 
+   we need to reboot. 
 
 2. <a name="M2"></a>**[M2]** __Describe what you need to do to add new
    `webapp` container to the infrastructure. Give the exact steps of
@@ -55,13 +55,13 @@ architecture?
 
    We need to change ha/config/haproxy.cfg file
    and add a new line : 
-   ```bash
+```bash
       server s3 <s3>:3000 check
-   ```
+```
    Same thing in the ha/scripts/run.sh file:
-   ```bash
+```bash
    sed -i 's/<s3>/$S3_PORT_3000_TCP_ADDR/g' /usr/local/etc/haproxy/haproxy.cfg
-   ```
+```
    Since we modify the config of ha container, we need to re-build it. When 
    it's done, we can normally run the ha container and don't forget to run also
    the new server s3.
@@ -285,27 +285,40 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    Tell us about the pros and cons to merge as much as possible of the
    command. In other words, compare:__
 
-  ```
+```
   RUN command 1
   RUN command 2
   RUN command 3
-  ```
+```
 
   __vs.__
 
-  ```
+```
   RUN command 1 && command 2 && command 3
-  ```
+```
 
   __There are also some articles about techniques to reduce the image
   size. Try to find them. They are talking about `squashing` or
   `flattening` images.__
 
-  A Docker image is built up from layers. Each layer is an instruction in the Dockerfile. It is a better practice to have a minimal number of layers in an image, because the size can become fat really quickly. That's why put all commands in one RUN is a better practice. It will reduce the size of the image. On an other hand, each layer is cached, so when an image is re-built, it could go faster to not re-download all the packages. So in this case, the first solution is better. 
-  An other problem with a merge of commands, like presented here, is that it becomes quickly not really easy to read when there is a lot of instructions.  
-  Regarding the apt-get update and apt-get install, there are a lot of articles, saying that they should be put in one RUN command, because of a cache reason. A single apt-get update will be cached, as said previously, and not re-run every time you need to install something. So it might download an old version of the package. 
+  A Docker image is built up from layers. Each layer is an instruction in the Dockerfile. 
+  It is a better practice to have a minimal number of layers in an image, because the size 
+  can become fat really quickly. That's why put all commands in one RUN is a better practice. 
+  It will reduce the size of the image. On an other hand, each layer is cached, so when an 
+  image is re-built, it could go faster to not re-download all the packages. So in this case, 
+  the first solution is better. 
+  
+  An other problem with a merge of commands, like presented here, is that it becomes quickly not 
+  really easy to read when there is a lot of instructions. Regarding the apt-get update and apt-get 
+  install, there are a lot of articles, saying that they should be put in one RUN command, because 
+  of a cache reason. A single apt-get update will be cached, as said previously, and not re-run every 
+  time you need to install something. So it might download an old version of the package. 
 
-  Squash or flatten mean that multiples layers of an image will become one single layer. The result of this is to reduce the size of an image. It is a very powerful technique, howerver, it should not be used for every image. You will probably sacrify some functionnality in the process, so it's important to think about it twice. But, let say, if we use someonelse's image and it's too heavy and we want to optimize its size, it is a good tool to use.  
+  Squash or flatten mean that multiples layers of an image will become one single layer. The result of 
+  this is to reduce the size of an image. It is a very powerful technique, howerver, it should not be 
+  used for every image. You will probably sacrify some functionnality in the process, so it's important 
+  to think about it twice. But, let say, if we use someonelse's image and it's too heavy and we want to 
+  optimize its size, it is a good tool to use.  
 
 2. __Propose a different approach to architecture our images to be able
    to reuse as much as possible what we have done. Your proposition
@@ -317,6 +330,7 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    we could optimize the size of the image removing all the packages we installed 
    and that we no longer need (wget curl vim rsyslog, ...) or use an option such as 
    --no-install-recommends.  
+
    Since we know that Docker caches each layers and reuses them when it is needed, we 
    could separated the instruction that will be-reused in other Dockerfiles. Like this,
    when Docker builds an image and had already cached one of the layers, it will simply
@@ -333,34 +347,34 @@ https://github.com/LuanaMartelli/Teaching-HEIGVD-AIT-2016-Labo-Docker
    Files are available under /logs/task4/
     - ha_haproxy-cfg_ha_started
    
-   ```
+```
    root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
    Container a70a8df4dbf7 has joined the Serf cluster with the following IP address: 172.18.0.2
-   ``` 
+``` 
 
     - ha_haproxy-cfg_s1_started
 
-   ```
+```
    root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
    Container d5a0f986f7e2 has joined the Serf cluster with the following IP address: 172.18.0.3
-   ```
+```
 
     - ha_haproxy-cfg_s2_started
 
-   ```
+```
    root@a70a8df4dbf7:/# cat /tmp/haproxy.cfg
    Container 6cec01d549c1 has joined the Serf cluster with the following IP address: 172.18.0.4
-   ```
+```
    
    
    - docker-ps
 
-   ```
+```
    CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
 6cec01d549c1        softengheigvd/webapp   "/init"             6 minutes ago       Up 6 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
 d5a0f986f7e2        softengheigvd/webapp   "/init"             7 minutes ago       Up 7 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s1
 a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago      Up 10 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha 
-  ```
+```
 
   - docker-inspect-ha
   - docker-inspect-s1
@@ -372,7 +386,17 @@ a70a8df4dbf7        softengheigvd/ha       "/init"             10 minutes ago   
 4. __Based on the three output files you have collected, what can you
    say about the way we generate it? What is the problem if any?__
 
-TODO
+The problem is in a template file. We can see that after each step the configuration 
+file is erased and contains only the information about the new member of the serf cluster. 
+To avoid that, a solution will be to modify this line in join-member script:
+```bash
+handlebars —name $HOSTNAME —ip $HOSTIP < /config/haproxy.cfg.hb > /tmp/haproxy.cfg
+```
+by this one (with a double «. Like this the previous input are not erased). 
+```bash
+handlebars —name $HOSTNAME —ip $HOSTIP « /config/haproxy.cfg.hb > /tmp/haproxy.cfg
+```
+But this solution add a new problem because the old cluster's members are never deleted.
 
 
 
@@ -413,12 +437,12 @@ TODO
 
    - docker-ps
 
-   ```
+```
    CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
 037244eb875d        softengheigvd/webapp   "/init"             2 minutes ago       Up 2 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s2
 6040af1c817f        softengheigvd/webapp   "/init"             8 minutes ago       Up 8 minutes        3000/tcp, 7373/tcp, 7946/tcp                                                             s1
 7c75951f8414        softengheigvd/ha       "/init"             16 minutes ago      Up 16 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
-  ```
+```
 
   - docker-inspect-ha
   - docker-inspect-s1
@@ -432,14 +456,14 @@ TODO
 
    - nodes_directory_list
 
-   ```
+```
    root@7c75951f8414:/nodes# ls -la
 total 16
 drwxr-xr-x  2 root root 4096 Dec 15 08:42 .
 drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 -rw-r--r--  1 root root   24 Dec 15 08:42 037244eb875d
 -rw-r--r--  1 root root   24 Dec 15 08:37 6040af1c817f 
-   ```
+```
 
 3. __Provide the configuration file after you stopped one container and
    the list of nodes present in the `/nodes` folder. One file expected
@@ -453,21 +477,21 @@ drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 
    - nodes_directory_list_after_s2_stop
 
-   ```
+```
    root@7c75951f8414:/nodes# ls -la
 total 12
 drwxr-xr-x  2 root root 4096 Dec 15 08:54 .
 drwxr-xr-x 74 root root 4096 Dec 15 08:46 ..
 -rw-r--r--  1 root root   24 Dec 15 08:37 6040af1c817f
-   ```
+```
 
    - docker_ps_after-s2-stop
 
-  ```
+```
   CONTAINER ID        IMAGE                  COMMAND             CREATED             STATUS              PORTS                                                                                    NAMES
 6040af1c817f        softengheigvd/webapp   "/init"             21 minutes ago      Up 21 minutes       3000/tcp, 7373/tcp, 7946/tcp                                                             s1
 7c75951f8414        softengheigvd/ha       "/init"             29 minutes ago      Up 29 minutes       0.0.0.0:80->80/tcp, 7373/tcp, 0.0.0.0:1936->1936/tcp, 0.0.0.0:9999->9999/tcp, 7946/tcp   ha
-  ```
+```
 
 
 
@@ -526,7 +550,10 @@ ec303fcb4ddc        softengheigvd/webapp   "/init"             20 minutes ago   
    improvements or ways to do the things differently. If any, provide
    references to your readings for the improvements.__
 
-This solution is quite good as it can manage itself. But, we could improve this solution by adding more automatism. For instance, when a node is down, there is no alert generated, we have to check it manually. It could be interesting to monitor logs and when one is down, re-create a new one with a script. 
+This solution is quite good as it can manage itself. But, we could improve this solution 
+by adding more automatism. For instance, when a node is down, there is no alert generated, 
+we have to check it manually. It could be interesting to monitor logs and when one is down, 
+re-create a new one with a script. 
 
 
 3. __(Optional:) Present a live demo where you add and remove a backend container.__
@@ -537,13 +564,21 @@ The demonstration was made on the 22nd of December.
 
 ## <a name="difficulties"></a> Difficulties
 
-On of the computer used for this lab is running under Windows. It was hard to set up, as all tools are done for Linux. For instance, every time we changed a line in a config file, we had to kill the virtual machine, pratically reboot the computer and start all over again.  
+On of the computer used for this lab is running under Windows. It was hard to set up, 
+as all tools are done for Linux. For instance, every time we changed a line in a config 
+file, we had to kill the virtual machine, pratically reboot the computer and start all 
+over again.  
 
-Another thing that has been difficult was to find all the information we needed to fully understand the lab. Sometimes, we ended up in forums where people had poor explanation about the theory and it was hard to understand.
+To fully understand the lab's theroy, we searched for informations and, sometimes, we ended 
+up in forums where people had poor explanation about the theory and it was hard to understand.
 
+All the manipulations were well describles, so there were no others particular diffculties. 
 
 
 ## <a name="conclusion"></a> Conclusion
 
-In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to automatize the work. The lab was quite long to realize, espacially because we hab to read a lot of documentation, but it the end, we learnt a lots about Docker and load balancing, so it was nice. 
+In this lab, we learnt how to use the HA proxy. It was interesting as there is a lot of tools to do 
+pratically whatever we want. But it would be a good thing to improve this system, by adding scripts to 
+automatize the work. The lab was quite long to realize, espacially because we hab to read a lot of documentation, 
+but it the end, we learnt a lots about Docker and load balancing, so it was nice. 
 
